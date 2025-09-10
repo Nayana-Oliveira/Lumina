@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina - Catálogo de Livros e Filmes</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    <link rel="icon" href="./img/logo.svg">
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<header>
+    <div class="container">
+        <a href="#/" class="logo-link">
+            <h1><i class="fas fa-book-open logo-icon"></i> Lumina</h1>
+        </a>
+        <nav>
+            <a href="#/"><i class="fas fa-home"></i> Início</a>
+            <a href="#/favorites"><i class="fas fa-heart"></i> Favoritos</a>
+            <a href="#/collections"><i class="fas fa-folder"></i> Coleções</a>
+            <button class="theme-toggle" id="theme-toggle" aria-label="Mudar tema">
+                <i class="fas fa-moon"></i>
+            </button>
+        </nav>
+    </div>
+</header>
+
+    <main class="container">
+        <section id="search-section">
+            <form id="search-form">
+                <input type="text" id="search-input" placeholder="Buscar por título..." required>
+                <select id="type-select">
+                    <option value="all">Tudo</option>
+                    <option value="movie">Filmes</option>
+                    <option value="book">Livros</option>
+                </select>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Buscar</button>
+            </form>
+            <button id="add-manual-btn" class="btn btn-accent"><i class="fas fa-plus"></i>Adicionar</button>
+        </section>
+
+        <section id="results-section">
+            <div id="results-grid" class="grid"></div>
+            <p id="loading-indicator" class="hidden">
+            </p>
+        </section>
+    </main>
+
+    <div id="add-item-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2><i class="fas fa-plus-circle"></i> Adicionar Novo Item</h2>
+            <form id="manual-add-form">
+                <label for="manual-title">Título:</label>
+                <input type="text" id="manual-title" required>
+
+                <label for="manual-type">Tipo:</label>
+                <select id="manual-type" required>
+                    <option value="book">Livro</option>
+                    <option value="movie">Filme</option>
+                </select>
+
+                <label for="manual-year">Ano:</label>
+                <input type="number" id="manual-year" required>
+
+                <label for="manual-author">Autor/Diretor:</label>
+                <input type="text" id="manual-author" required>
+                
+                <label for="manual-poster">URL do Pôster:</label>
+                <input type="url" id="manual-poster" placeholder="https://exemplo.com/imagem.jpg">
+
+                <label for="manual-description">Descrição:</label>
+                <textarea id="manual-description" rows="4"></textarea>
+
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar Item</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <div class="footer-about">
+                <h3><i class="fas fa-book-open"></i> Lumina</h3>
+                <p>Seu catálogo pessoal de livros e filmes. Organize, descubra e apaixone-se por novas histórias.</p>
+            </div>
+            <div class="footer-social">
+                <h4>Siga-nos</h4>
+                <a href="https://www.linkedin.com/in/nayana-heslley-barbosa-oliveira-65796537b/" aria-label="Linkedin"><i class="fab fa-linkedin"></i></a>
+                <a href="https://github.com/Nayana-Oliveira" aria-label="Github"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Lumina. Desenvolvido por Nayana Oliveira</p>
+        </div>
+    </footer>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>
