@@ -1,5 +1,5 @@
 import { searchMedia } from './services/api.js';
-import { loadData, saveData } from './store/storage.js';
+
 import {
     createItemCard,
     updateFavoriteButtonUI,
@@ -11,9 +11,11 @@ import {
 } from './ui/components.js';
 
 export let state = {
-    favorites: loadData('favorites', []),
+    favorites: [],
     results: [],
 };
+
+const API_BASE_URL = '/api';
 
 const searchForm = document.getElementById('search-form');
 const searchInput = document.getElementById('search-input');
@@ -47,22 +49,54 @@ async function handleSearch() {
     }
 }
 
+async function loadFavoritesFromServer() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/favorites`);
+        if (!response.ok) {
+            throw new Error('Falha ao carregar os favoritos do servidor.');
+        }
+        state.favorites = await response.json();
+        if (window.location.hash === '#/favorites') {
+            renderResults(state.favorites);
+        }
+    } catch (error) {
+        console.error('Erro ao carregar favoritos:', error);
+    }
+}
+
 /**
  * @param {string} id
  */
-function toggleFavorite(id) {
+async function toggleFavorite(id) {
     const cardElement = resultsGrid.querySelector(`.card[data-id='${id}']`);
-    const itemIndex = state.favorites.findIndex(fav => fav.id === id);
+    const isFavorite = state.favorites.some(fav => fav.id === id);
+    const item = state.results.find(res => res.id === id) || state.favorites.find(fav => fav.id === id);
 
-    if (itemIndex > -1) {
-        state.favorites.splice(itemIndex, 1);
-    } else {
-        const itemToAdd = state.results.find(res => res.id === id) || state.favorites.find(fav => fav.id === id);
-        if (itemToAdd) {
-            state.favorites.push(itemToAdd);
-        }
+    if (!item) {
+        console.error('Item não encontrado para favoritar.');
+        return;
     }
-    saveData('favorites', state.favorites);
+
+    try {
+        if (isFavorite) {
+            const response = await fetch(`${API_BASE_URL}/favorites/${id}`, { method: 'DELETE' });
+            if (!response.ok) throw new Error('Falha ao remover favorito.');
+            state.favorites = state.favorites.filter(fav => fav.id !== id);
+        } else {
+            const response = await fetch(`${API_BASE_URL}/favorites`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(item)
+            });
+            if (!response.ok) throw new Error('Falha ao adicionar favorito.');
+            state.favorites.push(item);
+        }
+    } catch (error) {
+        console.error('Erro ao comunicar com a API de favoritos:', error);
+        alert('Não foi possível atualizar o estado do favorito. Tente novamente.');
+        return; 
+    }
+
 
     if (cardElement) {
         updateFavoriteButtonUI(id, cardElement);
@@ -96,13 +130,15 @@ function handleManualAdd(event) {
 function handleThemeToggle() {
     const isDarkMode = document.body.classList.toggle('dark-mode');
     toggleThemeUI(isDarkMode); 
-    saveData('theme', isDarkMode ? 'dark' : 'light');
+
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
 }
 
-function router() {
+async function router() {
     const hash = window.location.hash || '#/';
     const searchSection = document.getElementById('search-section');
 
+    resultsGrid.innerHTML = ''; 
     searchSection.style.display = 'none';
 
     switch (hash) {
@@ -111,6 +147,7 @@ function router() {
             renderResults(state.results);
             break;
         case '#/favorites':
+
             renderResults(state.favorites);
             break;
         case '#/collections':
@@ -125,6 +162,7 @@ function init() {
     console.log("Lumina App iniciado!");
 
     applyInitialTheme();
+    loadFavoritesFromServer();
 
     searchForm.addEventListener('submit', (event) => {
         event.preventDefault();
